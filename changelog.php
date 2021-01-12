@@ -24,14 +24,24 @@
   </h1>
   
   <div class="panel panel-default">
-    <div class="panel-heading"><b>1.0</b></div>
+    <div class="panel-heading"><b>v1.1</b></div>
+    <div class="panel-body">
+		<ul>
+            <li>N-DASH version check at login added</li>
+			<li>Settings/Settings/Notifications: 'Send a notification if an update for N-DASH is available' enabled</li>
+        </ul>
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading"><b>v1.0</b></div>
     <div class="panel-body">
 		<ul>
             <li>N-DASH forked from G-DASH 1.3</li>
 			<li>BUG: Adding witness keys needed an extra parameter in RPC.</li>
 			<li>ENHANCEMENT: Removed exchanges GT and Nocks.</li>
 			<li>ENHANCEMENT: CoinGecko exchange added</li>
-			<li>BUG: Changed the way that the list of last 30 wallet transactions is derived and displayed.</li>
+			<li>BUG: Changed the way that the list of last 30 wallet transactions is derived.</li>
 			<li>BUG: Gulden earned by witness now correct displayed.</li>
         </ul>
         Changes regarding conversion Gulden to Novo:
@@ -48,8 +58,8 @@
 			<li>WALLET: More compact layout and Novo exchange rate added to wallet details.</li>
 			<li>HOLDING: Extend holding account added to holding drop down menu.</li>
 			<li>MINING: Mining function added.</li>
-			<li>SETTINGS/Settings/Wallet: Stex exchange added.</li>
-			<li>SETTINGS/Config Check: Full Node Port Forward is no longer supported.</li>
+			<li>Settings/Settings/Wallet: Stex exchange added.</li>
+			<li>Settings/Config Check: Full Node Port Forward is no longer supported.</li>
 		</ul>
     </div>
   </div>

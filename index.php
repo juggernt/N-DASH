@@ -62,8 +62,7 @@ if($CONFIG['otp']=="1" && $CONFIG['disablelogin'] != "1" && isset($_POST['login'
   });
   </script>
   <?php
-// @1.0  if($_SESSION['G-DASH-loggedin']==TRUE) {
-  if(isset($_SESSION['N-DASH-loggedin']) && $_SESSION['N-DASH-loggedin'] == TRUE) { // @1.0
+  if(isset($_SESSION['N-DASH-loggedin']) && $_SESSION['N-DASH-loggedin'] == TRUE) {
   ?>
   <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container-fluid">
@@ -93,34 +92,6 @@ if($CONFIG['otp']=="1" && $CONFIG['disablelogin'] != "1" && isset($_POST['login'
       </div>
 </nav>
 
-
-<!--?php
-//Check if there is an update for G-DASH
-$currentversion = $GDASH['currentversion'];
-$latestversionsau = array();
-$latestversionsarray = array();
-$latestversionsau = @json_decode(file_get_contents($GDASH['updateau']."?cv=$currentversion"));
-
-$latestversionsarray = array();
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $GDASH['updatecheck']);
-curl_setopt($ch, CURLOPT_HEADER, 0);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0");
-$choutput = curl_exec($ch);
-curl_close($ch);
-
-$latestversionsarray = json_decode($choutput);
-$getlatestversion = $latestversionsarray->tag_name;
-
-if($getlatestversion > $currentversion) {
-	echo "<div class='alert alert-info'>
-	  	  <strong>Update available:</strong> G-DASH version $getlatestversion available. 
-	  	  <a href='?page=upgrade'>Click here to update</a>.
-		  </div>";
-}
-?-->
-
 <div class="container-cont">
 <div class="container-fluid">
 <div id="gdasherrors"></div>
@@ -143,18 +114,20 @@ if($gulden->getinfo()=="") {
 			   \"Config Check\" in settings to identify the problem.
 			  </div>";
 	}
+	
 } else {
-/* @1.0
-	//Check if there is an update for Gulden
-	$checkversioninfo = $gulden->getinfo();
-	$currentguldenversion = $checkversioninfo['version'];
-
-	$guldenversion = $latestversionsau->gulden; */
+	
+    // Check if there is an update for N-DASH
+    $versions = checkDashVersion($NDASH['currentversion']);
+	
+	if($versions['latest'] != "" && $versions['current'] != $versions['latest']) {
+		echo "<div class='alert alert-info' id='dashupdateavailable'>
+		   <strong>N-DASH update available:</strong><br>There is an update available for N-DASH. You are running version <b>".$versions['current']."</b> and the latest version is <b>".$versions['latest']."</b></div>";
+	}
 	
     // Check novo version
     $versions = checkNovoVersion($gulden);
 	
-// @1.0	if($currentguldenversion < $guldenversion) {
 	if($versions['latest'] != "" && $versions['current'] != $versions['latest']) {
 		echo "<div class='alert alert-info' id='guldenupdateavailable'>
 		   <strong>Novo update available:</strong><br>There is an update available for Novo. You are running version <b>".$versions['current']."</b> and the latest version is <b>".$versions['latest']."</b></div>";

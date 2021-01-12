@@ -416,7 +416,7 @@
 			  
 			  <div class="checkbox">
 			      <label>
-			      <input type="checkbox" id="pushbulletgdash" name="pushbulletgdash" aria-describedby="pushbulletgdashhelp" value="1" disabled <?php if($CONFIG['pushbulletgdash']['active']=="1") { echo "checked='checked'"; } ?>>Send a notification if an update of N-DASH is available.</label><br>
+			      <input type="checkbox" id="pushbulletgdash" name="pushbulletgdash" aria-describedby="pushbulletgdashhelp" value="1"  <?php if($CONFIG['pushbulletgdash']['active']=="1") { echo "checked='checked'"; } ?>>Send a notification if an update of N-DASH is available.</label><br>
 			      <small id="pushbulletgdashhelp" class="form-text text-muted">A notification will be sent to pushbullet if an update is available for N-DASH.<br>Last message pushed: <?php echo $CONFIG['pushbulletgdash']['lastmes']; ?>
 			      </small>
 			  </div>

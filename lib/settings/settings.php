@@ -1,5 +1,5 @@
 <?php $NDASH = array (
-  'currentversion' => '1.0',
+  'currentversion' => '1.1',
   'nlgrate' => 
 	  array (
 	    '0' => array (

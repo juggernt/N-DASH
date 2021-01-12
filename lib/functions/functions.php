@@ -452,103 +452,6 @@ function getGuldenServices() {
 	return $runningService;
 }
 
-/* @1.0 function getTransactionDetails($accounttransactions, $numoftransactionstoshow, $addresslist) {
-	$currenttxshown = 1;
-	$returntx = array();
-	
-	for ($i=count($accounttransactions)-1; $i >= 0 ; $i--) {
-		$transactiondetails = $accounttransactions[$i];
-		if($transactiondetails['txid'] != $transactiontxid) {
-			//Stop showing transactions if the limit is reached
-			if($numoftransactionstoshow == $currenttxshown) { $i = 0; }
-			
-			//Fetch the transaction ID
-			$transactiontxid = $transactiondetails['txid'];
-			
-			//If the API is offline, set a time limit of execution time
-			$opts = array('http' =>
-			    array(
-			        'method'  => 'GET',
-			        'timeout' => 5 
-			    )
-			);
-			
-			//Put the limit in a stream context
-			$context  = stream_context_create($opts);
-			
-			//Get the raw transaction details from the Gulden blockchain Insight API (blockchain.gulden.com)
-			$txrawdetails = @json_decode(file_get_contents("https://blockchain.gulden.com/api/tx/".$transactiontxid, false, $context));
-			
-			$txfromaddress = $txrawdetails->vin[0]->addr;
-			$txtime = $txrawdetails->time;
-			$txconfirmations = $txrawdetails->confirmations;
-			$txfee = $txrawdetails->fees;
-			
-			$fromme = FALSE;
-			if(in_array($txfromaddress, $addresslist)==TRUE) {
-				$fromme = TRUE;
-				$foundFromMe = FALSE;
-			}
-			
-			for ($x=0; $x<count($txrawdetails->vout); $x++) {
-				//From other, to me
-				if($fromme==FALSE && in_array($txrawdetails->vout[$x]->scriptPubKey->addresses[0], $addresslist)==TRUE) {
-					$txtoaddress = $txrawdetails->vout[$x]->scriptPubKey->addresses[0];
-					$txvalue = $txrawdetails->vout[$x]->value;
-					$transactionamount = round($txvalue,2);
-				}
-				
-				//From me, to other
-				if($fromme==TRUE && in_array($txrawdetails->vout[$x]->scriptPubKey->addresses[0], $addresslist)==FALSE) {
-					
-					//If this is a "sendmany" transaction
-					if($foundFromMe == TRUE) {
-						$txtoaddress = $txrawdetails->vout[$x]->scriptPubKey->addresses[0];
-						$txvalue = $txrawdetails->vout[$x]->value;
-						$transactionamount = $transactionamount + -round($txvalue,2);
-					} else {
-						$txtoaddress = $txrawdetails->vout[$x]->scriptPubKey->addresses[0];
-						$txvalue = $txrawdetails->vout[$x]->value;
-						$transactionamount = -round($txvalue,2);
-						
-						//We found a first transaction; set to TRUE in case this is a sendmany transaction
-						$foundFromMe = TRUE;
-					}
-				}
-			}
-			
-			if($txtime=="") {
-				//IGNORED: Fix the number of confirmations for unconfirmed transactions
-				//$transactiondate = "Unconfirmed ($txconfirmations confirmations)";
-				$transactiondate = "Unconfirmed";
-			} else {
-				$transactiondate = date('d/m/Y H:i', $txtime);
-			}
-			$transactionid = "<a href='https://blockchain.gulden.com/tx/".$transactiontxid."' target='_blank' title='".$transactiontxid."'>".substr($transactiontxid, 0, 7)."...</a>";
-			
-			$currenttxshown++;
-			
-			$currenttx['txfromaddress'] = $txfromaddress;
-			$currenttx['txtime'] = $txtime;
-			$currenttx['txconfirmations'] = $txconfirmations;
-			$currenttx['txfee'] = $txfee;
-			$currenttx['txtoaddress'] = $txtoaddress;
-			$currenttx['transactionamount'] = $transactionamount;
-			$currenttx['transactiondate'] = $transactiondate;
-			$currenttx['transactionid'] = $transactionid;
-			
-			$returntx[] = $currenttx;
-			
-			if($txtime == "") {
-				return "offline";
-				exit;
-			}
-		}
-	}
-
-	return $returntx;
-} */
-
 //Function to fetch the txdetails live from the wallet
 function getLiveTransactionDetails($accounttransactions, $numoftransactionstoshow, $addresslist, $gulden, $selectedaccount) {
 	$returntx = array();
@@ -575,25 +478,6 @@ function getLiveTransactionDetails($accounttransactions, $numoftransactionstosho
 	foreach ($uniquetxids as $transactiontxid) {
 		//Get the transaction details from the GuldenD for this transaction
 		$txrawdetails = $gulden->gettransaction($transactiontxid);
-
-/* @1.0
-		//If the getrawtransaction fails, fall back to the original Insight API and go to the next TXID
-		if(empty($txrawdetails)) {
-			$temptxarray = array();
-			$temptxarray[]['txid'] = $transactiontxid;
-			$singletxdata = getTransactionDetails($temptxarray, 1, $addresslist);
-			
-			//If the Insight API is offline, exit this function as it will keep trying for other transactions
-			if($singletxdata=="offline") {
-				
-				$txconnecterror = "APIoffline";
-				return $txconnecterror;
-				exit;
-			}
-			
-			$returntx[] = $singletxdata[0];
-		} else { */
-		
    		$transactiondate = date('d/m/Y H:i', $txrawdetails['time']);
         $txdetails = $txrawdetails['details'];
         for ($x = 0; $x <count($txdetails); $x++) {
@@ -605,7 +489,6 @@ function getLiveTransactionDetails($accounttransactions, $numoftransactionstosho
                 $returntx[] = $currenttx;
             }
         }
-// @1.0		}
 	}
 
 	return $returntx;
@@ -692,6 +575,23 @@ function checkNovoVersion ($gulden) {
     if ($cvarray[5] == 0) $cv = $cv . $cvarray[6];
     else $cv = $cv . $cvarray[5] . $cvarray [6];
 	$versions['current'] = $cv;
+	
+	// Return latest and current version
+	return $versions;
+}
+
+// Check if there is an update for N-DASH
+function checkDashVersion ($currentversion) {
+    // Return array_values
+    $versions = array();
+
+    // Get latest dash version
+    $json = json_decode(file_get_contents('https://api.github.com/repos/juggernt/N-DASH/releases/latest', false,
+        stream_context_create(['http' => ['header' => "User-Agent: Vestibulum\r\n"]])), true);
+    $versions['latest'] = $json['tag_name'];
+    
+    // Format current version
+    $versions['current'] = "v" . $currentversion;
 	
 	// Return latest and current version
 	return $versions;

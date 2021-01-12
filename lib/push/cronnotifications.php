@@ -9,27 +9,6 @@ if (php_sapi_name() == "cli") {
 	//Connect to Gulden
 	$gulden = new Gulden($CONFIG['rpcuser'],$CONFIG['rpcpass'],$CONFIG['rpchost'],$CONFIG['rpcport']);
 
-/* @1.0
-	//Get the latest version info for G-DASH and Gulden
-	$latestversionsau = array();
-	$latestversionsarray = array();
-	$internalip = trim(shell_exec("ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1 -d'/'"));
-	$latestversionsau = @json_decode(file_get_contents($GDASH['updateau']."?ip=".$internalip."&cv=".$CONFIG['dashversion']));
-
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $GDASH['updatecheck']);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0");
-	$choutput = curl_exec($ch);
-	curl_close($ch);
-
-	$latestversionsarray = json_decode($choutput);
-	
-	//Write the current Gulden status to the log file
-	//GetSystemMemUsage();
-	
-*/
 	//Check if Novo-daemon is running
 	if($CONFIG['pushbulletgulden']['active']=="1") {
 		
@@ -46,11 +25,8 @@ if (php_sapi_name() == "cli") {
 		if($lastmessage!=$currentmessage) {
 			
 			//The message is different, send a push notification
-/* @1.0		$sendpush = shell_exec("curl --header 'Authorization: Bearer ".$CONFIG['pushbullet']."' -X POST https://api.pushbullet.com/v2/pushes --
-            header 'Content-Type: application/json' --data-binary '{\"type\": \"note\", \"title\": \"Novo-daemon\", \"body\": \"".$currentmessage."\"}'"); */
-// @1.0->			
             $sendpush = shell_exec("curl --header 'Access-Token: ".$CONFIG['pushbullet']."' --header 'Content-Type: application/json' --data-binary '{\"type\": \"note\", \"title\": \"Novo-daemon\", \"body\": \"$currentmessage\"}' --request POST https://api.pushbullet.com/v2/pushes");
-// @1.0->            
+            
             //Set the current message as the last message in the config file
 			$CONFIG['pushbulletgulden']['lastmes'] = $currentmessage;
 			
@@ -59,63 +35,53 @@ if (php_sapi_name() == "cli") {
 		}
 	}
 
-/* @1.0
-	//Check if there is a new version of G-DASH available
+	// Check if there is a new version of G-DASH on GitHub
 	if($CONFIG['pushbulletgdash']['active']=="1") {
 		
-		//Get the info (last message and current message)
+		// Get the info (last message and current message)
 		$lastmessage = $CONFIG['pushbulletgdash']['lastmes'];
-		$currentmessage = "";
-		
-		//What is the current version of G-DASH
-		$currentversion = $GDASH['currentversion'];
-		
-		//Check which version is the latest version of G-DASH	  
-		$getlatestversion = $latestversionsarray->tag_name;
-		
-		//Set the message
-		$currentmessage = "Latest version is ".$getlatestversion.". You are currently running ".$currentversion;
-		
-		//Check the last message that was pushed to prevent multiple pushes of the same message
-		if($getlatestversion > $currentversion && $lastmessage != $currentmessage) {
+		$currentmessage = "N-DASH is up-to-date";
+		$versions = checkDashVersion($NDASH['currentversion']);
+		if ($versions['latest'] != "" && $versions['current'] != $versions['latest']) 
+			$currentmessage = "A new version of N-DASH is available (".$versions['latest'].")!";
+				
+		// Check the last message that was pushed to prevent multiple pushes of the same message
+		if ($lastmessage != $currentmessage) {
 			
-			//The message is different, send a push notification
-			$sendpush = shell_exec("curl --header 'Authorization: Bearer ".$CONFIG['pushbullet']."' -X POST https://api.pushbullet.com/v2/pushes --header 'Content-Type: application/json' --data-binary '{\"type\": \"note\", \"title\": \"G-DASH update available\", \"body\": \"".$currentmessage."\"}'");
-			
-			//Set the current message as the last message in the config file
-			$CONFIG['pushbulletgdash']['lastmes'] = $currentmessage;
-			
-			//Update the config file
-			file_put_contents(__DIR__.'/../../config/config.php', '<?php $CONFIG = '.var_export($CONFIG, true).'; ?>');
+            // The message is different, send a push notification
+            $sendpush = shell_exec("curl --header 'Access-Token: ".$CONFIG['pushbullet']."' --header 'Content-Type: application/json' --data-binary '{\"type\": \"note\", \"title\": \"N-DASH version\", \"body\": \"$currentmessage\"}' --request POST https://api.pushbullet.com/v2/pushes");
+                
+            // Set the current message as the last message in the config file
+            $CONFIG['pushbulletgdash']['lastmes'] = $currentmessage;
+                
+            // Update the config file
+            file_put_contents(__DIR__.'/../../config/config.php', '<?php $CONFIG = '.var_export($CONFIG, true).'; ?>');
 		}
-	} */
+	}
 	
-// @1.0->
-	//Check if there is a newer version of Novo on GitHub
+	// Check if there is a newer version of Novo on GitHub
 	if ($gulden->getinfo() != "" && $CONFIG['pushbulletguldenupdate']['active']=="1") {
 		
 		// Check latest version on GitHub
 		$lastmessage = $CONFIG['pushbulletguldenupdate']['lastmes'];
 		$currentmessage = "Novo is up-to-date!";
 		$versions = checkNovoVersion($gulden);
-		if ($versions['latest'] != "" && $versions['current'] != $versions['latest']) {
+		if ($versions['latest'] != "" && $versions['current'] != $versions['latest']) 
 			$currentmessage = "A new version of Novo is available (".$versions['latest'].")!";
 				
-			//Check the last message that was pushed to prevent multiple pushes of the same message
-			if ($lastmessage != $currentmessage) {
+		// Check the last message that was pushed to prevent multiple pushes of the same message
+		if ($lastmessage != $currentmessage) {
 			
-                //The message is different, send a push notification
-                $sendpush = shell_exec("curl --header 'Access-Token: ".$CONFIG['pushbullet']."' --header 'Content-Type: application/json' --data-binary '{\"type\": \"note\", \"title\": \"Novo version\", \"body\": \"$currentmessage\"}' --request POST https://api.pushbullet.com/v2/pushes");
+            // The message is different, send a push notification
+            $sendpush = shell_exec("curl --header 'Access-Token: ".$CONFIG['pushbullet']."' --header 'Content-Type: application/json' --data-binary '{\"type\": \"note\", \"title\": \"Novo version\", \"body\": \"$currentmessage\"}' --request POST https://api.pushbullet.com/v2/pushes");
                 
-                //Set the current message as the last message in the config file
-                $CONFIG['pushbulletguldenupdate']['lastmes'] = $currentmessage;
+            // Set the current message as the last message in the config file
+            $CONFIG['pushbulletguldenupdate']['lastmes'] = $currentmessage;
                 
-                //Update the config file
-                file_put_contents(__DIR__.'/../../config/config.php', '<?php $CONFIG = '.var_export($CONFIG, true).'; ?>');
-			}
+            // Update the config file
+            file_put_contents(__DIR__.'/../../config/config.php', '<?php $CONFIG = '.var_export($CONFIG, true).'; ?>');
 		}
 	}
-// @1.0<-
 
 /* @1.0
 	//Notification if there is a new incoming transaction
