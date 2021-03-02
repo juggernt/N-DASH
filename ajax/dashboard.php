@@ -65,11 +65,6 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 		$gdifficulty = round($ginfo['difficulty'],3);
 		$gerrors = $ginfo['errors'];
 		
-		//Get synced blocks via blockchain api
-		//$gallblocksjson = file_get_contents('https://blockchain.gulden.com/api/status?q=getInfo');
-		//$array = json_decode($gallblocksjson);
-		//$gallblocks = $array->info->blocks;
-		
 		//Get total headers via Novo-daemon getpeerinfo
 		$peerinfo = $gulden->getpeerinfo();
 		
@@ -129,7 +124,6 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 			$age = GetTimeAnno(time() - $blockinfo['time']);
 			$transactions = count($blockinfo['tx']);
 			$difficulty = round($blockinfo['difficulty'],3);
-// @1.0->			
 			$txlist = $blockinfo['tx'];
 			$amount = 0;
 			foreach ($txlist as $txid) {
@@ -144,50 +138,42 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
                 $txvin = $realtx['result']['vin'];
                 $txvout = $realtx['result']['vout'];
                 $numvout = count($txvout);
+                $pow2coinbase = false; // @1.2
                 $prevouttype = '';
-                $vout = 0;
                 foreach ($txvin as $txval) {
-                    if (array_key_exists('prevout_type', $txval) && $txval['prevout_type'] == 'index') $prevouttype = 'index'; 
-                    if (array_key_exists('vout', $txval) && $txval['vout'] == 1) {
-                        $vout = 1;
-                        break;
-                    }
+                    if (array_key_exists('pow2_coinbase', $txval)) $pow2coinbase = true; 
+                    if (array_key_exists('prevout_type', $txval)) $prevouttype = $txval['prevout_type']; 
                 }
-                $pow2witness = 0;
+                $pow2witness = false;
                 $witnessvalue = 0;
                 foreach ($txvout as $txval) {
                     if ($numvout == 1) {
                         if (array_key_exists('PoW²-witness', $txval)) {
-                            $pow2witness = 1;
+                            $pow2witness = true;
                             $amount += floatval('0.10');
                         }
                         else $amount += floatval($txval['value']);
                         break;
                     }
                     elseif ($txval['n'] == 0 && array_key_exists('PoW²-witness', $txval)) {
-                        $pow2witness = 1;
+                        $pow2witness = true;
                         $witnessvalue = $txval['value'];
                         continue;
                     }
-                    elseif ($vout == 1) {
-                        $amount += floatval($txval['value']);
-                        continue;
-                    }
-                    elseif (array_key_exists('standard-key-hash', $txval)) {
-                        $amount += floatval($txval['value']);
-                        if ($witnessvalue > 0 && $prevouttype == "index") {
+                    if ($transactions > 2) { // @1.2
+                        if (!$pow2witness && array_key_exists('standard-key-hash', $txval)) $amount += floatval($txval['value']);
+                        if ($witnessvalue > 0 && !$pow2coinbase && ($prevouttype == 'index' || $prevouttype == 'hash')) {
                             $amount += $witnessvalue;
                             $witnessvalue = 0;
                         }
-                        continue;
                     }
-                    elseif ($pow2witness == 1) {
-                        $amount += floatval('0.10');
-                        $pow2witness = 0;
+                    if ($pow2witness && $txval['n'] == 1) {
+                        if (array_key_exists('standard-key-hash', $txval)) $amount += floatval($txval['value']);
+                        else $amount += floatval('0.10');
+                        $pow2witness = false;
                     }
                 }
             }
-// @1.0<-	
             if ($amount == 0) $valueout = "N/A";
             else $valueout = number_format($amount, 2, '.', '');
             $tablerows .= "
@@ -213,7 +199,6 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 			if($witnessdata['last_active_block'] > $lastwitnessactionblock) {
 				$witnessdetailsname = $witnessdata['ismine_accountname'];
 				$lastwitnessactionblock = $witnessdata['last_active_block'];
-				//$lastwitnessactiondate = date("d/m/Y H:i:s", time() - (($gblocks - $lastwitnessactionblock) / (576 / (24 * 60 * 60))));
 			}
 		}
 		
