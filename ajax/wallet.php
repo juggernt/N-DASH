@@ -97,25 +97,6 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 		//Get the balance of all accounts
 		$totalbalance = round($gulden->getbalance(),2);
 		
-/*		//Use the user defined exchange to check the conversion rate for NLG
-		$nlgprices = $GDASH['nlgrate'];
-		$currentnlgprovider = $CONFIG['nlgprovider'];
-		if($currentnlgprovider == "") { $currentnlgprovider = "0"; }
-		$fetchURL = $nlgprices[$currentnlgprovider]['market'];
-		$pricesymbol = $nlgprices[$currentnlgprovider]['symbol'];
-		$fetchmarket = @json_decode(file_get_contents($fetchURL));
-		$nlgpricelink = $nlgprices[$currentnlgprovider]['link'];
-		if(strpos($nlgpricelink, "->")!==false) {
-			$nlgpricelinkexpl = explode("->", $nlgpricelink);
-			foreach ($nlgpricelinkexpl as $addtolink) {
-				$fetchmarket = $fetchmarket->$addtolink;
-			}
-			$currentprice = $fetchmarket;
-		} else {
-			$currentprice = $fetchmarket->$nlgpricelink;
-		}
-		$currencyrounding = $nlgprices[$currentnlgprovider]['rounding'];*/
-		
 		
 		//TODO: Create a good function for showing a new unused address
 		//Temporary solution until a better way is found
@@ -178,8 +159,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
         if ($data != '') $ticker = $ticker[$data];
 		$valuelinkexpl = explode("->", $valuelink);
         $currentprice = $ticker[$valuelinkexpl[0]][$valuelinkexpl[1]];
-        If ($currentprice == '') $currentprice = "Not available!";
-        
+        if ($currentprice == '') $currentprice = 0;
 		$returnarray['selectedaccount'] = $selectedaccount;
 		$returnarray['accountlist'] = $accountlist;
 		$returnarray['address'] = $latestaddress;
@@ -195,6 +175,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 		$returnarray['syncprogress'] = $gblockspercent;
 		$returnarray['currentprice'] = $currentprice;
 		$returnarray['pricesymbol'] = $pricesymbol;
+		$returnarray['rounding'] = $currencyrounding;
 	} else {
 		$returnarray['selectedaccount'] = "";
 		$returnarray['accountlist'] = "";
@@ -222,6 +203,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 	$returnarray['syncprogress'] = "";
 	$returnarray['currentprice'] = "";
 	$returnarray['pricesymbol'] = "";
+	$returnarray['rounding'] = "";
 	
 	$returnarray['errors'] = "";
 	$returnarray['server']['cpu'] = "";

@@ -262,7 +262,11 @@ $(document).ready(function() {
 		  	  	
 		  	  	//"<b>Unconfirmed:</b> "+data['uncbalance']+"<br>"+
 		  	  	//"<b>Address:</b> "+data['address']+" <small><button type=\"button\" class=\"btn-link\" onclick=\"createNewAddress()\">( Generate new address )</button></small><br><br>"+
-		  	  	$('#walletinfopanel').html("<div class='alert alert-success'>Novo exchange rate from " + data['exchange'] + ": &euro; " + data['currentprice'].toFixed(2) + "</div>" +
+                
+                exchangerate = data['exchange'] + ': ';
+                if (data['currentprice'] == 0) exchangerate += 'Not available!';
+                else exchangerate += data['pricesymbol'] + " " + data['currentprice'].toFixed(data['rounding']);
+		  	  	$('#walletinfopanel').html("<div class='alert alert-success'>Novo exchange rate from " + exchangerate + "</div>" +
                     "<b>Balance:</b> N "+numberWithCommas(data['balance'])+" / "+data['otherbalancesymbol']+" "+numberWithCommas(data['otherbalance'])+"<br>"+
 										   "<b>Address:</b> "+data['address']+"<br><br>"+
 				  						   "<div id='guldenqr'></div>");
