@@ -10,5 +10,5 @@ control a Novo wallet.
 This dashboard is created with the idea to keep everything as simple as 
 possible, so even people who are not very good with computers or don't 
 understand how to set up a holding account can use this functionality 
-of Novo. Of course, new ideas and comments are always welcome. You 
+of Novo. Of course, new ideas and comments are always welcome. You can 
 contact me via email: dashboardnovo@google.com 

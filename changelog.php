@@ -24,6 +24,17 @@
   </h1>
   
   <div class="panel panel-default">
+    <div class="panel-heading"><b>v1.2</b></div>
+    <div class="panel-body">
+		<ul>
+            <li>Total value out calculation adjusted</li>
+            <li>Exchange rate not available handled correctly</li>
+            <li>CoinRequest link updated</li>
+        </ul>
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
     <div class="panel-heading"><b>v1.1</b></div>
     <div class="panel-body">
 		<ul>
@@ -42,7 +53,7 @@
 			<li>ENHANCEMENT: Removed exchanges GT and Nocks.</li>
 			<li>ENHANCEMENT: CoinGecko exchange added</li>
 			<li>BUG: Changed the way that the list of last 30 wallet transactions is derived.</li>
-			<li>BUG: Gulden earned by witness now correct displayed.</li>
+			<li>BUG: Gulden earned by witness displayed correctly.</li>
         </ul>
         Changes regarding conversion Gulden to Novo:
         <ul>
