@@ -126,6 +126,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 			$difficulty = round($blockinfo['difficulty'],3);
 			$txlist = $blockinfo['tx'];
 			$amount = 0;
+            $holdingvalue = 0;
 			foreach ($txlist as $txid) {
                 $rawtx = $gulden->getrawtransaction($txid);
                 $txobj = $gulden->decoderawtransaction($rawtx);
@@ -138,7 +139,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
                 $txvin = $realtx['result']['vin'];
                 $txvout = $realtx['result']['vout'];
                 $numvout = count($txvout);
-                $pow2coinbase = false; // @1.2
+                $pow2coinbase = false;
                 $prevouttype = '';
                 foreach ($txvin as $txval) {
                     if (array_key_exists('pow2_coinbase', $txval)) $pow2coinbase = true; 
@@ -148,34 +149,37 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
                 $witnessvalue = 0;
                 foreach ($txvout as $txval) {
                     if ($numvout == 1) {
-                        if (array_key_exists('PoW²-witness', $txval)) {
-                            $pow2witness = true;
-                            $amount += floatval('0.10');
-                        }
-                        else $amount += floatval($txval['value']);
+                        if (!array_key_exists('PoW²-witness', $txval)) $amount += floatval($txval['value']);
                         break;
                     }
-                    elseif ($txval['n'] == 0 && array_key_exists('PoW²-witness', $txval)) {
-                        $pow2witness = true;
-                        $witnessvalue = $txval['value'];
+                    elseif (array_key_exists('PoW²-witness', $txval)) {
+                        if ($txval['n'] == 0) {
+                            $pow2witness = true;
+                            $witnessvalue = $txval['value'];
+                        } // @1.3
+                        else $amount += floatval($txval['value']);
                         continue;
                     }
-                    if ($transactions > 2) { // @1.2
+                    if ($transactions > 2) {
                         if (!$pow2witness && array_key_exists('standard-key-hash', $txval)) $amount += floatval($txval['value']);
                         if ($witnessvalue > 0 && !$pow2coinbase && ($prevouttype == 'index' || $prevouttype == 'hash')) {
                             $amount += $witnessvalue;
                             $witnessvalue = 0;
                         }
                     }
-                    if ($pow2witness && $txval['n'] == 1) {
-                        if (array_key_exists('standard-key-hash', $txval)) $amount += floatval($txval['value']);
-                        else $amount += floatval('0.10');
-                        $pow2witness = false;
+                    if ($pow2witness && $txval['n'] != 0) {
+                        if (array_key_exists('standard-key-hash', $txval)) {
+                            $amount += floatval($txval['value']);
+                            if ($pow2coinbase) $holdingvalue += floatval($txval['value']);
+                        }
                     }
                 }
             }
             if ($amount == 0) $valueout = "N/A";
-            else $valueout = number_format($amount, 2, '.', '');
+            else {
+                if ($transactions > 1 && $holdingvalue == 0) $amount += 0.10;
+                $valueout = number_format(round($amount, 2), 2, '.', ',');
+            }
             $tablerows .= "
 			<tr>
 	          <td><a href='https://dactual.com/novo/block.php?height=$i' target='_blank'>$i</a></td>
@@ -183,7 +187,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 	          <td>$transactions</td>
 	          <td>$difficulty</td>
 	          <td>$valueout</td>
-	        </tr>
+            </tr>
 	        ";
 		}
 		
