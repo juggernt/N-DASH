@@ -34,12 +34,10 @@
 	$CONFIG['rpcuser'] = $_POST['rpcuser'];
 	$CONFIG['rpcpass'] = $_POST['rpcpassword'];
 
-// @1.0->
 	if (isset($POST['otp'])) $CONFIG['otp'] = $_POST['otp'];
 	elseif (!isset($CONFIG['otp'])) $CONFIG['otp'] = NULL;
 	if (isset($_POST['otpkey'])) $CONFIG['otpkey'] = $_POST['otpkey'];
 	elseif (!isset($CONFIG['otpkey'])) $CONFIG['otpkey'] = '';
-// @1.0<-
 	
 	$CONFIG['gdashuser'] = $_POST['gdashuser'];
 	$originalpassworddash = '';
@@ -64,7 +62,6 @@
 	$CONFIG['configured'] = "1";
 	$CONFIG['dashversion'] = $NDASH['currentversion'];
 
-// @1.0->
 	if (isset($_POST['disablelogin'])) {
         $CONFIG['disablelogin'] = '1';
         $CONFIG['otp'] = NULL;
@@ -88,63 +85,8 @@
     else $CONFIG['pushbullettx']['active'] = '0';
     if (isset($_POST['pushbulletwitness'])) $CONFIG['pushbulletwitness']['active'] = '1';
     else $CONFIG['pushbulletwitness']['active'] = '0';
-// @1.0<-
 	
 	$CONFIG['nlgprovider'] = $_POST['nlgprice'];
-	
-	//******************//
-	//**CRON FOR STATS**//
-	//******************//
-	
-	//Check the crontab for stats upload
-	$nodestatscron = exec("crontab -l | grep -q 'getpeerinfo' && echo '1' || echo '0'");
-	
-	//Twice per hour, random between 1-600 seconds
-	$randomstatstime = rand(1,600);
-	$nodestatscronentry = "*/10 * * * * sleep ".$randomstatstime."; ".$CONFIG['guldenlocation']."Novo-cli -datadir=".$CONFIG['datadir']." getpeerinfo | curl -X POST -H \"Content-Type:application/json\" -d @- https://dactual.com/novo/peerinfo.php/? >/dev/null 2>&1";
-	$currentcron = explode(PHP_EOL, shell_exec('crontab -l'));
-	
-	if($nodestatscron=="0" && $CONFIG['nodeupload']=="1") {
-		
-		//If not available and user wants to upload stats
-		$currentcron[] = $nodestatscronentry;
-	
-	} elseif($nodestatscron=="1" && $CONFIG['nodeupload']=="1") {
-		
-		//If available and user wants to upload stats
-		for($i=0; $i < count($currentcron); $i++) { //Update current entry in case anything changed (path, ...)
-			if (strpos($currentcron[$i], 'getpeerinfo') !== false) {
-				$currentcron[$i] = $nodestatscronentry;
-			}
-		}
-		
-	} elseif($nodestatscron=="1" && $CONFIG['nodeupload']=="0") {
-		
-		//If available and user doesn't want to upload stats
-		//Find entry and remove it
-		for($i=0; $i < count($currentcron); $i++) {
-			if (strpos($currentcron[$i], 'getpeerinfo') !== false) {
-				unset($currentcron[$i]);
-			}
-		}
-		
-	}
-	
-	//Remove empty array elements
-	$currentcron = array_filter($currentcron);
-	
-	//Update the cron tab
-	$cronstr = implode("\n", $currentcron);
-	
-	if(file_put_contents('/tmp/crontab.txt', $cronstr.PHP_EOL)) {
-		$out = shell_exec('crontab /tmp/crontab.txt');
-		unlink('/tmp/crontab.txt');
-	} else {
-		echo "<div class='alert alert-warning'>
-		  		<strong>Error:</strong> Could not write crontab for Node Stats. Please try saving your settings again.
-			  </div>";
-	}
-	
 	
 	
 	//***********************//
@@ -201,72 +143,6 @@
 		  		<strong>Error:</strong> Could not write crontab for PushBullet. Please try saving your settings again.
 			  </div>";
 	}
-	
-	
-/* @1.0
-	//*************************
-	//**CRON FOR NODEREQUESTS**
-	//*************************
-	
-	//Check the crontab for node requests
-	$noderequestcron = exec("crontab -l | grep -q 'noderequests.php' && echo '1' || echo '0'");
-	
-	//Random between 1-300 seconds
-	$randomrequesttime = rand(1,300);
-	
-	//Every 30 minutes
-*/
-// @1.0	$noderequestcronentry = "*/30 * * * * sleep ".$randomrequesttime."; php ".__DIR__."/lib/push/noderequests.php >/dev/null 2>&1";
-/* @1.0
-	$currentcron = explode(PHP_EOL, shell_exec('crontab -l'));
-	
-	if($noderequestcron=="0" && $CONFIG['allownoderequests']!="") {
-		
-		//If not available and user wants to allow requests
-		$currentcron[] = $noderequestcronentry;
-	
-	} elseif($noderequestcron=="1" && $CONFIG['allownoderequests']!="") {
-		
-		//If available and user wants to allow requests
-		for($i=0; $i < count($currentcron); $i++) { //Update current entry in case anything changed (path, ...)
-			if (strpos($currentcron[$i], 'noderequests.php') !== false) {
-				$currentcron[$i] = $noderequestcronentry;
-			}
-		}
-		
-	} elseif($noderequestcron=="1" && $CONFIG['allownoderequests']=="") {
-		
-		//If available and user doesn't want to allow requests
-		//Find entry and remove it
-		for($i=0; $i < count($currentcron); $i++) {
-			if (strpos($currentcron[$i], 'noderequests.php') !== false) {
-				unset($currentcron[$i]);
-			}
-		}
-		
-		//Empty the config parameters
-		$CONFIG['noderequest']['node'] = "";
-		$CONFIG['noderequest']['time'] = "";
-		
-	}
-	
-	//Remove empty array elements
-	$currentcron = array_filter($currentcron);
-	
-	//Update the cron tab
-	$cronstr = implode("\n", $currentcron);
-	
-	if(file_put_contents('/tmp/crontabnr.txt', $cronstr.PHP_EOL)) {
-		$out = shell_exec('crontab /tmp/crontabnr.txt');
-		unlink('/tmp/crontabnr.txt');
-	} else {
-		echo "<div class='alert alert-warning'>
-		  		<strong>Error:</strong> Could not write crontab for node requests. Please try saving your settings again.
-			  </div>";
-	} */
-	
-	
-	
 	
 	if(file_put_contents('config/config.php', '<?php $CONFIG = '.var_export($CONFIG, true).'; ?>')) {
 		echo "<div class='alert alert-success'>
@@ -325,7 +201,7 @@
   <ul class="nav nav-tabs">
 	  <li class="active"><a data-toggle="tab" href="#gdashsettings">N-DASH</a></li>
 	  <li><a data-toggle="tab" href="#notificationssettings">Notifications</a></li>
-	  <li><a data-toggle="tab" href="#nodesettings">Node</a></li>
+<!--	  <li><a data-toggle="tab" href="#nodesettings">Node</a></li> -->
 	  <li><a data-toggle="tab" href="#walletsettings">Wallet</a></li>
 	  <li><a data-toggle="tab" href="#guldensettings">Novo</a></li>
   </ul>
@@ -445,27 +321,6 @@
 		</div>
 	</div>
 	
-	<div id="nodesettings" class="tab-pane fade">
-	    <div class="panel panel-default">
-		    <div class="panel-heading"><b>Node settings</b></div>
-		    <div class="panel-body" id="nodesettings">
-		      <div id='nodeuploaddiv' class="checkbox">
-			    <label>
-			    <input type="checkbox" id="nodeupload" name="nodeupload" aria-describedby="nodeuploadhelp" value="1" disabled <?php if($CONFIG['nodeupload']=="1") { echo "checked='checked'"; } ?>>Upload node statistics</label><br>
-			    <small id="nodeuploadhelp" class="form-text text-muted">Help the Novo network by uploading your node statistics. You can see the stats   and a map of the nodes on <a href='https://www.dactual.com/novo/nodemaps.php' target='_blank'>Dactual</a>
-			    </small>
-			  </div>
-			  
-			  <div class="checkbox">
-			    <label>
-			    <input type="checkbox" id="allownoderequests" name="allownoderequests" aria-describedby="allownoderequestshelp" value="1" disabled<?php if($CONFIG['allownoderequests']=="1") { echo "checked='checked'"; } ?>>Allow Node Requests</label><br>
-			    <small id="allownoderequestshelp" class="form-text text-muted">Help the Novo network by temporarily (24 hours) connecting to a N-DASH node that requested inbound connections. You will only connect to 1 node from the list and it will automatically be removed after 24 hours and the next node in line will be added for the next 24 hours. This method allows N-DASH users without any inbound connections or a changed IP address to be found by others in the Novo network.
-			    </small>
-			  </div>
-		    </div>
-		</div>
-	</div>
-	
 	<div id="walletsettings" class="tab-pane fade">
 	    <div class="panel panel-default">
 		    <div class="panel-heading"><b>Wallet settings</b></div>
@@ -512,8 +367,8 @@
 			  </div>
 			  <div class="form-group">
 			    <label for="datalocation">Data location</label>
-			    <input type="text" class="form-control" id="datalocation" name="datalocation" aria-describedby="datalocationhelp" placeholder="Enter path to novo.conf" <?php if($CONFIG['datadir']!='') { echo "value='".$CONFIG['datadir']."'"; } ?>>
-			    <small id="datalocationhelp" class="form-text text-muted">The folder containing novo.conf. For example: /opt/novo/datadir/</small>
+			    <input type="text" class="form-control" id="datalocation" name="datalocation" aria-describedby="datalocationhelp" placeholder="Enter path to florin.conf" <?php if($CONFIG['datadir']!='') { echo "value='".$CONFIG['datadir']."'"; } ?>>
+			    <small id="datalocationhelp" class="form-text text-muted">The folder containing florin.conf. For example: /opt/novo/datadir/</small>
 			  </div>
 			  <div class="form-group">
 			    <label for="rpcuser">RPC username</label>
@@ -522,7 +377,7 @@
 			  <div class="form-group">
 			    <label for="rpcpassword">RPC password</label>
 			    <input type="password" class="form-control" id="rpcpassword" name="rpcpassword" placeholder="Password" autocomplete='off' <?php if($CONFIG['rpcpass']!='') { echo "value='".$CONFIG['rpcpass']."'"; } ?>>
-			    <small id="rpcpasswordrepeathelp" class="form-text text-muted">Note: The username and password must match the username and password used in the novo.conf file</small>
+			    <small id="rpcpasswordrepeathelp" class="form-text text-muted">Note: The username and password must match the username and password used in the florin.conf file</small>
 			  </div>
 			  <div class="form-group">
 			    <label for="rpchost">Host address</label>

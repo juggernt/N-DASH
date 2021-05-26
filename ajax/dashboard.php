@@ -156,7 +156,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
                         if ($txval['n'] == 0) {
                             $pow2witness = true;
                             $witnessvalue = $txval['value'];
-                        } // @1.3
+                        }
                         else $amount += floatval($txval['value']);
                         continue;
                     }

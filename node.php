@@ -37,10 +37,10 @@
   <hr>
   
   <div class="panel panel-default">
-    <div class="panel-heading">Node configuration (novo.conf)</div>
+    <div class="panel-heading">Node configuration (florin.conf)</div>
     <div class="panel-body" id="nodeconfig">
     	<?php
-    		$nodeconfig = readGuldenConf($CONFIG['datadir']."novo.conf");
+    		$nodeconfig = readGuldenConf($CONFIG['datadir']."florin.conf");
 			if($nodeconfig['maxconnections']=="") { $nodeconfig['maxconnections'] = 0; }
 			echo "<table class='table table-striped'>";
 			echo "<tr><td class='col-md-2'><b>Max connections:</b></td><td class='col-md-2'>".$nodeconfig['maxconnections']."</td></tr>";

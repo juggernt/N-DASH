@@ -29,21 +29,33 @@ if(isset($_GET['action'])) {
 				if(strpos($_POST['accountname'], "*")===false) {
 					$accountnamechars = $_POST['accountname'];
 					$accountnamechars = str_replace(".", "_",$accountnamechars);
-					$createaccount = $gulden->createwitnessaccount($accountnamechars);
-					if($createaccount == false) {
-						$returnarray['code'] = $gulden->response['error']['code'];
-						$returnarray['message'] = $gulden->response['error']['message'];
-					} else {
-						$returnarray = $createaccount;
-					}
+                    $accountlist = $gulden->listaccounts();
+                    $duplicatename = false;
+                    foreach ($accountlist as $account) {
+                        if ($account['label'] == $accountnamechars && $account['state'] == 'Normal') {
+                            $returnarray['code'] = "0";
+                            $returnarray['message'] = "Account name already exists!";
+                            $duplicatename = true;
+                        }
+                    }
+                    if (!$duplicatename) {
+                        $createaccount = $gulden->createwitnessaccount($accountnamechars);
+                        $errorcode = $gulden->response['error']['code'];
+                        if ($errorcode != 0) {
+                            $returnarray['code'] = $errorcode;
+                            $returnarray['message'] = $gulden->response['error']['message'];
+                        } else {
+                            $returnarray = $createaccount;
+                        }
+                    }
 				}
-			} else {
-				$returnarray['code'] = $guldenresponse;
-				$returnarray['message'] = $guldenresponsemessage;
-			}
-		} else {
-			$returnarray['code'] = "0";
-			$returnarray['message'] = "No wallet password supplied.";
+            } else {
+                $returnarray['code'] = $guldenresponse;
+                $returnarray['message'] = $guldenresponsemessage;
+            }
+        } else {
+            $returnarray['code'] = "0";
+            $returnarray['message'] = "No wallet password supplied.";
 		}
 		
 		echo json_encode($returnarray);
@@ -73,14 +85,6 @@ if(isset($_GET['action'])) {
 				}
 				
 				//Send funds from witness account to specified wallet account
-/* @1.4 
-                $gulden->move($fromaccount, $sendtoaccount, $amounttowithdraw);
-
-                Werkt niet (errorcode -6, insufficient funds), na proberen via Gulden-cli werkte het wel na eerst 1 GLD over te brengen naar wallet en daarna -1 voor hele witness account (waarschijnlijk opgelost in Gulden 2.2.0.10).
-
-                dus eerst:
-*/
-// @1.4                $gulden->move($fromaccount, $sendtoaccount, 1); // @1.4
                 $gulden->move($fromaccount, $sendtoaccount, $amounttowithdraw);
 				$witnessresponse = $gulden->response['error']['code'];
 				$witnessresponsemessage = $gulden->response['error']['message'];
@@ -122,7 +126,7 @@ if(isset($_GET['action'])) {
 			
 			//Check the confirmed, unconfirmed and locked balance of this witness account. If this is 
 			//more than zero the account is already funded.
-			$witnessname = $sendtoaccount; // @1.0
+			$witnessname = $sendtoaccount;
 			$confirmedbalance = $gulden->getbalance($witnessname, 0);
 			$unconfirmedbalance = $gulden->getimmaturebalance($witnessname);
 			$lockedbalance = $gulden->getlockedbalance($witnessname);
@@ -131,7 +135,6 @@ if(isset($_GET['action'])) {
 			
 			//If the total balance as above is more than zero, it's already funded.
 			//This should also be captured now by Novo-daemon and return an error.
-// @1.0			if($totalbalance > 0) {
 			if($totalbalance > 0 && $extend == 0) {
 				$returnarray = "-8";
 			} else {
@@ -144,12 +147,10 @@ if(isset($_GET['action'])) {
 				}
 				
 				//Send funds to witness account
-// @1.0->         $gulden->fundwitnessaccount($fromaccount, $sendtoaccount, $sendamount, $locktime);
 				if ($extend == 0) {
                     $gulden->fundwitnessaccount($fromaccount, $sendtoaccount, $sendamount, $locktime);
                 }
                 else $gulden->extendwitnessaccount($fromaccount, $sendtoaccount, $sendamount, $locktime);
-// @1.0<-
 				$witnessresponse = $gulden->response['error']['code'];
 				$witnessresponsemessage = $gulden->response['error']['message'];
 				
@@ -195,8 +196,7 @@ if(isset($_GET['action'])) {
 				if($guldenresponse!="-14") {
 					$accountnamechars = $_POST['importaccountname'];
 					$accountnamechars = str_replace(".", "_",$accountnamechars);
-// @1.4					$importaccount = $gulden->importwitnesskeys($accountnamechars, $_POST['importaccountkey']);
-					$importaccount = $gulden->importwitnesskeys($accountnamechars, $_POST['importaccountkey'], true); // @1.4
+					$importaccount = $gulden->importwitnesskeys($accountnamechars, $_POST['importaccountkey'], true);
 					if($importaccount == false) {
 						$returnarray['code'] = $gulden->response['error']['code'];
 						$returnarray['message'] = $gulden->response['error']['message'];

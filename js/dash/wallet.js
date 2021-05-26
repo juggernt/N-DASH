@@ -269,10 +269,10 @@ $(document).ready(function() {
 		  	  	$('#walletinfopanel').html("<div class='alert alert-success'>Novo exchange rate from " + exchangerate + "</div>" +
                     "<b>Balance:</b> N "+numberWithCommas(data['balance'])+" / "+data['otherbalancesymbol']+" "+numberWithCommas(data['otherbalance'])+"<br>"+
 										   "<b>Address:</b> "+data['address']+"<br><br>"+
-				  						   "<div id='guldenqr'></div>");
+				  						   "<div id='novoqr'></div>");
 				
-				var qrcode = new QRCode("guldenqr", {
-				    text: "gulden:"+data['address'],
+				var qrcode = new QRCode("novoqr", {
+				    text: "novo:"+data['address'],
 				    width: 128,
 				    height: 128,
 				    colorDark : "#000000",
@@ -280,7 +280,6 @@ $(document).ready(function() {
 				    correctLevel : QRCode.CorrectLevel.H
 				});
 				
-				//$('#tabletransactions > tbody:last-child').html(data['accounttransactionsdetails']);
 			  }
 		  } else {
 		  	  $('#walletinfopanel').html("Novo-daemon is not running");

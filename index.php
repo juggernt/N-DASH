@@ -2,8 +2,6 @@
 //start session
 session_start();
 
-//TODO: Create functions for version checks below instead of static code in the index page
-
 include('lib/settings/settings.php');
 include('config/config.php');
 include('lib/functions/functions.php');
@@ -33,7 +31,7 @@ if($CONFIG['otp']=="1" && $CONFIG['disablelogin'] != "1" && isset($_POST['login'
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>N-DASH: Novo Holding and Mining Node Dashboard</title>
+  <title>N-DASH: Novo/Florin Holding and Mining Node Dashboard</title>
   <link rel="icon" type="image/png" href="images/nd128x128.png">
   <base target="_self">
   <meta name="google" value="notranslate">
@@ -116,21 +114,29 @@ if($gulden->getinfo()=="") {
 	}
 	
 } else {
+    if (!isset($_SESSION['versionschecked'])) {
 	
-    // Check if there is an update for N-DASH
-    $versions = checkDashVersion($NDASH['currentversion']);
+        // Version checks only once after login
+        // Check if there is an update for N-DASH
+        $versions = checkDashVersion($NDASH['currentversion']);
+		if($versions['latest'] != "" && $versions['current'] != $versions['latest']) {
+            $_SESSION['currentdashversion'] = $versions['current'];
+            $_SESSION['latestdashversion'] = $versions['latest'];
+        }
 	
-	if($versions['latest'] != "" && $versions['current'] != $versions['latest']) {
-		echo "<div class='alert alert-info' id='dashupdateavailable'>
-		   <strong>N-DASH update available:</strong><br>There is an update available for N-DASH. You are running version <b>".$versions['current']."</b> and the latest version is <b>".$versions['latest']."</b></div>";
+        // Check novo/florin version
+        $versions = checkNovoVersion($gulden);
+        if($versions['latest'] != "" && $versions['current'] != $versions['latest']) {
+            $_SESSION['currentnovoversion'] = $versions['current'];
+            $_SESSION['latestnovoversion'] = $versions['latest'];
+        }
+        $_SESSION['versionschecked'] = true;
 	}
-	
-    // Check novo version
-    $versions = checkNovoVersion($gulden);
-	
-	if($versions['latest'] != "" && $versions['current'] != $versions['latest']) {
-		echo "<div class='alert alert-info' id='guldenupdateavailable'>
-		   <strong>Novo update available:</strong><br>There is an update available for Novo. You are running version <b>".$versions['current']."</b> and the latest version is <b>".$versions['latest']."</b></div>";
+	if (isset($_SESSION['latestdashversion'])) { echo "<div class='alert alert-info' id='dashupdateavailable'>
+		   <strong>N-DASH update available:</strong><br>There is an update available for N-DASH. You are running version <b>".$_SESSION['currentdashversion']."</b> and the latest version is <b>".$_SESSION['latestdashversion']."</b></div>";
+	}
+	if (isset($_SESSION['latestnovoversion'])) { echo "<div class='alert alert-info' id='guldenupdateavailable'>
+		   <strong>Novo/Florin update available:</strong><br>There is an update available for Novo/Florin. You are running version <b>".$_SESSION['currentnovoversion']."</b> and the latest version is <b>".$_SESSION['latestnovoversion']."</b></div>";
 	}
 }
 

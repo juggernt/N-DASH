@@ -52,7 +52,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 	$accountlistwitnessonly = selectElementWithValue($accountlist, "type", "Witness-only witness");
 	
 	//Only select witness accounts
-	$accountlist = selectElementWithValue($accountlist, "type", "Witness");
+	$accountlist = selectElementWithValue($accountlist, "type", "Holding");
 	
 	//Merge the witness arrays
 	$accountlist = array_merge($accountlist, $accountlistwitnessonly);
@@ -64,12 +64,11 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 	
 	//Only get the witness address list	of all the witnesses in the whole network
 	$witnessaddresslist = $witnessaccountsnetwork[0]['witness_address_list'];
-// @1.0->
+
 	$totalHolders = 0;
     foreach ($witnessaddresslist as $holderaccount) {
         if ($holderaccount['amount'] > 0.0) $totalHolders++; 
     }
-// @1.0<-	
 	
 	//Only get the witness address list of the witness accounts that belong to this wallet
 	$mywitnessaddresslist = $mywitnessaccountsnetwork[0]['witness_address_list'];
@@ -190,8 +189,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 				//Sum the earnings
 				$totalwitnessearnings = 0;
 				foreach ($witnesstransactions as $witnesstxearnings) {
-// @1.4					$totalwitnessearnings = $totalwitnessearnings + $witnesstxearnings['amount'];
-					if ($witnesstxearnings['vout'] != 0) $totalwitnessearnings = $totalwitnessearnings + $witnesstxearnings['amount']; // @1.4
+					if ($witnesstxearnings['vout'] != 0) $totalwitnessearnings = $totalwitnessearnings + $witnesstxearnings['amount'];
 				}
 				
 				//Count the witness cycles
@@ -262,9 +260,8 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 	}
 	
 	$returnarray['witness']['totalwitnesses'] = $totalWitnesses;
-	$returnarray['witness']['totalholders'] = $totalHolders; // @1.0
-// @1.0	$returnarray['witness']['totalNetworkWeight'] = $totalNetworkWeight;
-	$returnarray['witness']['totalNetworkWeight'] = $totalNetworkWeightAdjusted; // @1.0
+	$returnarray['witness']['totalholders'] = $totalHolders;
+	$returnarray['witness']['totalNetworkWeight'] = $totalNetworkWeightAdjusted;
 	$returnarray['witness']['currentPhase'] = $currentPhase;
 	$returnarray['witness']['totalGuldenLocked'] = $totalGuldenLocked;
 	
@@ -280,7 +277,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 	
 	
 	$returnarray['witness']['totalwitnesses'] = '';
-	$returnarray['witness']['totalholders'] = ''; // @1.0
+	$returnarray['witness']['totalholders'] = '';
 	$returnarray['witness']['totalNetworkWeight'] = '';
 	$returnarray['witness']['currentPhase'] = '';
 	$returnarray['server']['cpu'] = '';

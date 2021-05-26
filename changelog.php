@@ -24,6 +24,20 @@
   </h1>
   
   <div class="panel panel-default">
+    <div class="panel-heading"><b>v2.0</b></div>
+    <div class="panel-body">
+		<ul>
+            <li>Total value out calculation adjusted</li>
+            <li>Cron for stats removed</li>
+            <li>Node tab removed from N-DASH settings</li>
+            <li>Check for duplicate names on creating holding accounts</li>
+            <li>Version check for N-DASH and Florin only once after login</li>
+            <li>Adapted for rename Novo to Florin (see N-DASH manual)
+        </ul>
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
     <div class="panel-heading"><b>v1.2</b></div>
     <div class="panel-body">
 		<ul>
@@ -49,28 +63,28 @@
     <div class="panel-body">
 		<ul>
             <li>N-DASH forked from G-DASH 1.3</li>
-			<li>BUG: Adding witness keys needed an extra parameter in RPC.</li>
-			<li>ENHANCEMENT: Removed exchanges GT and Nocks.</li>
+			<li>BUG: Adding witness keys needed an extra parameter in RPC</li>
+			<li>ENHANCEMENT: Removed exchanges GT and Nocks</li>
 			<li>ENHANCEMENT: CoinGecko exchange added</li>
-			<li>BUG: Changed the way that the list of last 30 wallet transactions is derived.</li>
-			<li>BUG: Gulden earned by witness displayed correctly.</li>
+			<li>BUG: Changed the way that the list of last 30 wallet transactions is derived</li>
+			<li>BUG: Gulden earned by witness displayed correctly</li>
         </ul>
         Changes regarding conversion Gulden to Novo:
         <ul>
-			<li>All references to 'GuldenD' changed to 'Novo-daemon'.</li>
-			<li>All references to 'Gulden-cli' changed to 'Novo-cli'.</li>
-			<li>All references to 'G-DASH' changed to 'N-DASH' where applicable.</li>
-			<li>All references to 'witness' changed to 'holding' or 'holder' where applicable.</li>
-			<li>G-DASH version check removed.</li>
-			<li>Novo version check adapted to Novo release on GitHub.</li>
-			<li>DASHBOARD: Block# is a link to dactual.com for more details.</li>
-			<li>DASHBOARD: 'Total value out' added to block data (needs txindex=1 in novo.conf, otherwise 'N/A').</li>
-			<li>NODE: Same layout for all items.</li>
-			<li>WALLET: More compact layout and Novo exchange rate added to wallet details.</li>
-			<li>HOLDING: Extend holding account added to holding drop down menu.</li>
-			<li>MINING: Mining function added.</li>
-			<li>Settings/Settings/Wallet: Stex exchange added.</li>
-			<li>Settings/Config Check: Full Node Port Forward is no longer supported.</li>
+			<li>All references to 'GuldenD' changed to 'Novo-daemon'</li>
+			<li>All references to 'Gulden-cli' changed to 'Novo-cli'</li>
+			<li>All references to 'G-DASH' changed to 'N-DASH' where applicable</li>
+			<li>All references to 'witness' changed to 'holding' or 'holder' where applicable</li>
+			<li>G-DASH version check removed</li>
+			<li>Novo version check adapted to Novo release on GitHub</li>
+			<li>DASHBOARD: Block# is a link to dactual.com for more details</li>
+			<li>DASHBOARD: 'Total value out' added to block data (needs txindex=1 in novo.conf, otherwise 'N/A')</li>
+			<li>NODE: Same layout for all items</li>
+			<li>WALLET: More compact layout and Novo exchange rate added to wallet details</li>
+			<li>HOLDING: Extend holding account added to holding drop down menu</li>
+			<li>MINING: Mining function added</li>
+			<li>Settings/Settings/Wallet: Stex exchange added</li>
+			<li>Settings/Config Check: Full Node Port Forward is no longer supported</li>
 		</ul>
     </div>
   </div>
