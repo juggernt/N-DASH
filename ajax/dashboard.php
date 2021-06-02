@@ -182,7 +182,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
             }
             $tablerows .= "
 			<tr>
-	          <td><a href='https://dactual.com/novo/block.php?height=$i' target='_blank'>$i</a></td>
+	          <td><a href='https://dactual.com/florin/block.php?height=$i' target='_blank'>$i</a></td>
 	          <td>$age</td>
 	          <td>$transactions</td>
 	          <td>$difficulty</td>
