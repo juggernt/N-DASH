@@ -177,7 +177,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
             }
             if ($amount == 0) $valueout = "N/A";
             else {
-                if ($transactions > 1 && $holdingvalue == 0) $amount += 0.075;
+                if ($transactions > 1 && $holdingvalue < 0.01) $amount += 0.075;
                 $valueout = number_format($amount, 2, '.', ',');
             }
             $tablerows .= "

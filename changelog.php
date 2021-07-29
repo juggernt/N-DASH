@@ -24,6 +24,17 @@
   </h1>
   
   <div class="panel panel-default">
+    <div class="panel-heading"><b>v2.1</b></div>
+    <div class="panel-body">
+		<ul>
+            <li>Change novo to florin in dactual block link on dashboard</li>
+            <li>Total value out adapted to changed rewards</li>
+            <li>Mining changed (arena added in Novo/Florin 2.0.4)</li>
+        </ul>
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
     <div class="panel-heading"><b>v2.0</b></div>
     <div class="panel-body">
 		<ul>

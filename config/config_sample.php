@@ -37,8 +37,6 @@
         'lastmes' => '',
         'lastblock' => '',
     ),
-    'nodeupload' => '0',
-    'allownoderequests' => '0',
     'nlgprovider' => '0',
     );
 ?>

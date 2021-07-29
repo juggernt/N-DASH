@@ -35,7 +35,7 @@ $(document).ready(function() {
 		  }
 		  
 		  if(data['gulden']['sync']!='100%' && data['server']['cpu']!='' && data['gulden']['sync']!='') {
-		  	$('#errordiv').append("<div class='alert alert-warning'>Novo-deamon is still syncing, N-DASH will respond slower until sync has finished. Please wait...</div>")
+		  	$('#errordiv').append("<div class='alert alert-warning'>Novo-daemon is still syncing, N-DASH will respond slower until sync has finished. Please wait...</div>")
 		  }
 		  
 		  if(Number.isInteger(data['gulden']['version'])==false || data['gulden']['sync'] != '100%') { $("#guldendiv").css("background-color","#ffe6e6"); } else { $("#guldendiv").css("background-color","#e6ffe6"); }

@@ -134,7 +134,7 @@ if(isset($_GET['action'])) {
         $setrewardaddressresult = "true";
 	
         if ($generate == "true") {
-            $generateresult = $gulden->setgenerate(true, (int)$numproc, (int)$memsize.'M', $UUID);
+            $generateresult = $gulden->setgenerate(true, (int)$numproc, (int)$numproc, (int)$memsize.'M', $UUID);
         }
         else $generateresult = $gulden->setgenerate(false);
         

@@ -67,6 +67,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
             $statistics['last_reported'] = $stats['last_reported'];
             $statistics['rolling_average'] = $stats['rolling_average'];
             $statistics['best_reported'] = $stats['best_reported'];
+            $statistics['arena_setup'] = $stats['arena_setup'];
         }
     }
 	

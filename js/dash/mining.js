@@ -242,7 +242,8 @@ loadjsondata = function() {
                     miningpanelbody4 += "<b>Mining Statistics:</b><p>";
                     miningpanelbody4 += "Last Reported: " + stats['last_reported'] + "<br>";
                     miningpanelbody4 += "Rolling Average: " + stats['rolling_average'] + "<br>";
-                    miningpanelbody4 += "Best Reported: " + stats['best_reported'];
+                    miningpanelbody4 += "Best Reported: " + stats['best_reported'] + "<br>";
+                    miningpanelbody4 += "Arena Setup: " + stats['arena_setup'];
                 }
             }
             else miningactionsbody += "<ul><li><a data-toggle='modal' href='#addminingaccount'>Create account</a></li></ul>";

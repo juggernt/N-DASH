@@ -13,7 +13,8 @@ understand how to set up a holding account can use this functionality
 of Novo/Florin. Of course, new ideas and comments are always welcome. You can 
 contact me via email: dashboardnovo@google.com
 
-ATTENTION!
-N-DASH releases 1.x are for Novo (Florin version up to 1.0.11).
-N-DASH 2.0 onwards are for Florin (version 2.0.0 onwards), but Novo naming is still used (with a few exceptions) for the time being.
-See N-DASH manual for the installation procedure.
+ATTENTION!  
+N-DASH releases 1.x are for Novo (Florin version up to 1.0.11).  
+N-DASH 2.0 onwards is for Florin (version 2.0.1 up to 2.0.3), but Novo naming is still used (with a few exceptions) for the time being.  
+See N-DASH manual for the installation procedure.  
+N-DASH 2.1 onwards is for Florin 2.0.4 onwards (mining arena setup added).
