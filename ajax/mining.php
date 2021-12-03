@@ -78,6 +78,9 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
     $returnarray['accountlist'] = $miningaccounts;
     $returnarray['statistics'] = $statistics;
     $returnarray['mininginfo'] = $mininginfo;
+    (int)$numcpu = exec('getconf _NPROCESSORS_ONLN', $retval);
+    if ($numcpu > 8) $numcpu = 8;
+    $returnarray['numcpu'] = $numcpu;
     
 	// Get numproc and memsize
 	if (array_key_exists($selectedaccount, $CONFIG['mining'])) {
@@ -85,8 +88,8 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
         $returnarray['memsize'] = $CONFIG['mining'][$selectedaccount]['memsize'];
     }
     else {
-        $returnarray['numproc'] = '0';
-        $returnarray['memsize'] = '0';
+        $returnarray['numproc'] = 0;
+        $returnarray['memsize'] = 0;
     }
 }
 else {
@@ -98,6 +101,7 @@ else {
 	$returnarray['memsize'] = 0;
 	$returnarray['statistics'] = '';
     $returnarray['mininginfo'] = '';
+    $returnarray['numcpu'] = 0;
 }
 echo json_encode($returnarray);
 }

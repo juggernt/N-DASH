@@ -1,5 +1,6 @@
 var refreshRate = 60000;
 var accountuuid = '';
+var arenaproc = 0;
 var loadjsondata = '';
 
 //Create a new mining account
@@ -75,52 +76,48 @@ function changeAddress() {
 }
 
 //Handle mining starting and stopping
+function handleArenaSetup() {
+    arenaproc = $("#slider").slider("option", "value");
+    $('#generateresult').html("<div class='alert alert-warning'>Arena Setup will use " + arenaproc + " thread(s). Set #threads and memory size used for mining..</div>");
+    $("#slider2").slider("enable");
+    $("#miningbutton1").prop("disabled", true);
+    $("#miningbutton2").prop("disabled", false);
+}
+
+//Handle mining starting and stopping
 function handleMining(uuid, rewardaddress) {
     var generate;
     var numproc;
     var memsize;
     if ($("#miningbutton2").text().substring(0, 5) === "Start") {
         numproc = $("#slider").slider("option", "value");
-        if (numproc < 1) {
-            $('#generateresult').html("<div class='alert alert-warning'># Threads not given!</div>");
-            return;
-        }
-        else {
-            memsize = $("#slider2").slider("option", "value");
-            console.log(memsize);
-            if (memsize < 1) {
-                $('#generateresult').html("<div class='alert alert-warning'>Memory not given!</div>");
-                return;
-            }
-        }
+        memsize = $("#slider2").slider("option", "value");
         $("#slider").slider("disable");
         $("#slider2").slider("disable");
         $("#numproc2").text(": "+numproc);
         $("#memsize2").text(": "+memsize+" MB");
-        document.getElementById("miningbutton2").innerHTML = "Stop mining";
         generate = "true";
-        $('#generateresult').html("<div class='alert alert-warning'>Mining started..</div>");
+        document.getElementById("miningbutton2").innerHTML = "Stop mining";
     }
     else {
         $("#slider").slider("enable");
-        $("#slider2").slider("enable");
+        $("#slider2").slider("disable");
         $("#numproc2").text("");
         $("#memsize2").text("");
-        document.getElementById("miningbutton2").innerHTML = "Start mining";
+        arenaproc = 0;
         numproc = 0;
         memsize = 0;
+        $("#miningbutton1").prop("disabled", false);
+        $("#miningbutton2").prop("disabled", true);
         generate = "false";
-        $('#generateresult').html("<div class='alert alert-warning'>Mining stopped..</div>");
+        document.getElementById("miningbutton2").innerHTML = "Start mining";
     }
-    $("#miningbutton2").button("disable");
     $.post( "ajax/miningactions.php?action=handlemining",
-             { generate: generate, uuid: uuid, numproc: numproc, memsize: memsize, rewardaddress: rewardaddress })
+             { generate: generate, uuid: uuid, numproc: numproc, arenaproc: arenaproc, memsize: memsize, rewardaddress: rewardaddress })
      .done(function( data ) {
-        console.log(data);
         var data = jQuery.parseJSON(data);
         $('#generateresult').html(data);
     });
-    $("#miningbutton2").button("enable");
 }
 
 $(document).ready(function() {
@@ -130,17 +127,17 @@ loadjsondata = function() {
         var miningaccountsbody = '';
         var miningpanelbody = '';
         var miningpanelbody2 = '';
-        var miningbutton = '';
-        var miningpanelbody4 = '';
+        var miningbuttons = '';
+        var miningpanelbody3 = '';
         var generateresult = '';
-        
+
         if(data['errors'] != '') {
 		  	$('#errordiv').html("<div class='alert alert-warning'>"+data['errors']+"</div>");
 		}
 		else {
             // Only 1 mining account possible
             var numAccounts = data['accountlist'].length;
-            
+
             if (numAccounts > 0) {
                 // Actions: Rename and Delete
                 miningactionsbody +=
@@ -148,11 +145,13 @@ loadjsondata = function() {
                         '<li><a data-toggle="modal" href="#deleteaccount">Delete account</a></li>' +
                         '<li><a data-toggle="modal" href="#changeaddress">Change reward address</a></li></ul>';
             
-                 // Put account name in list and current account name in header
+                // Put account name in list and current account name in header
 		  	  	accountuuid = data['selectedaccount'];
                 var rewardaddress;
                 var numproc = data['numproc'];
                 var memsize = data['memsize'];
+                if (arenaproc > 0 && numproc == 0) return;
+
 		  	  	$.each(data['accountlist'], function( index, value ) {
 		  	  		if(value['UUID'] == accountuuid) {
                         accountname = value['label'];
@@ -161,8 +160,8 @@ loadjsondata = function() {
                         rewardaddress = value['rewardaddress'];
                         $('#currentrewardaddress').val(rewardaddress);
                     }
-		  	  		miningaccountsbody += "<button type=\"button\" class=\"btn-link\" onclick=\"changeAccount('" +
-                        value['UUID'] + "')\">" + value['label'] + "</button><br>";
+		  	  		miningaccountsbody += '<button type="button" class="btn-link" onclick="changeAccount(' +
+                        value['UUID'] + ')">' + value['label'] + '</button><br>';
                 });
                 
                 // Mining reward address
@@ -185,9 +184,10 @@ loadjsondata = function() {
                 miningpanelbody += '</div>';
 
                 // Select # processors
-                if ( !$("#slider").data("ui-slider") ) {                
+                var numcpu = data['numcpu'];
+                if ( !$("#slider").data("ui-slider") ) {
                     $("#slider").slider(
-                        {range: "min", min: 0, step: 1, max: 8, value: 0,
+                        {range: "min", min: 1, step: 1, max: numcpu, value: 1,
                         create: function() {$("#numproc").text( $( this ).slider( "value" ));},
                         slide: function(event, ui) {$("#numproc").text( ui.value );}});
                 }
@@ -204,9 +204,9 @@ loadjsondata = function() {
                 }
                 
                 // Select memory size
-                if ( !$("#slider2").data("ui-slider") ) {                
+                if ( !$("#slider2").data("ui-slider") ) {
                     $("#slider2").slider(
-                        {range: "min", min: 0, step: 512, max: 4096, value: 0,
+                        {range: "min", min: 512, step: 512, max: 4096, value: 512,
                         create: function() {$("#memsize").text( $( this ).slider( "value" ));},
                         slide: function(event, ui) {$("#memsize").text( ui.value );}});
                 }
@@ -222,37 +222,39 @@ loadjsondata = function() {
                     $("#memsize2").text(": "+memsize+" MB");
                 }
                 
-                // Mining button
-                miningbutton += '<center><button type="button" class="btn btn-success" id="miningbutton2" ' +
-                        'onclick="handleMining(' + "'" + accountuuid + "'" + ', ' + "'" + rewardaddress + "'" + ')">';
+                // Mining buttons
+                miningbuttons += '<center><button type="button" class="btn btn-success" id="miningbutton1" ' +
+                        'onclick="handleArenaSetup()" style="margin-right: 50px">Arena Setup</button><button type="button" class="btn btn-success" id="miningbutton2" onclick="handleMining(' + "'" + accountuuid + "'" + ', ' + "'" + rewardaddress + "'" + ')">';
                 if (data['miningstate'] === false) {
-                    miningbutton += "Start ";
-                    generateresult = "<div class='alert alert-warning'>Mining not active..</div>";
+                    miningbuttons += 'Start';
+                    generateresult = '<div class="alert alert-warning">Mining not active, set #threads for Arena Setup..</div>';
+                    $("#slider2").slider("disable");
                 }
                 else {
-                    miningbutton += "Stop ";
-                    generateresult = "<div class='alert alert-warning'>Mining is active..</div>";
+                    miningbuttons += 'Stop';
+                    generateresult = '<div class="alert alert-warning">Mining is active..</div>';
                 }
-                miningbutton += "Mining";
-                miningbutton += '</button></center>';
-                
+                miningbuttons += ' Mining</button></center>';
+
                 // Mining statistics
                 if (data['statistics'] != '') {
                     var stats = data['statistics'];
-                    miningpanelbody4 += "<b>Mining Statistics:</b><p>";
-                    miningpanelbody4 += "Last Reported: " + stats['last_reported'] + "<br>";
-                    miningpanelbody4 += "Rolling Average: " + stats['rolling_average'] + "<br>";
-                    miningpanelbody4 += "Best Reported: " + stats['best_reported'] + "<br>";
-                    miningpanelbody4 += "Arena Setup: " + stats['arena_setup'];
+                    miningpanelbody3 += "<b>Mining Statistics:</b><p>";
+                    miningpanelbody3 += "Last Reported: " + stats['last_reported'] + "<br>";
+                    miningpanelbody3 += "Rolling Average: " + stats['rolling_average'] + "<br>";
+                    miningpanelbody3 += "Best Reported: " + stats['best_reported'] + "<br>";
+                    miningpanelbody3 += "Arena Setup: " + stats['arena_setup'];
                 }
             }
-            else miningactionsbody += "<ul><li><a data-toggle='modal' href='#addminingaccount'>Create account</a></li></ul>";
+            else miningactionsbody += '<ul><li><a data-toggle="modal" href="#addminingaccount">Create account</a></li></ul>';
 
-            $('#miningactionspanel').html(miningactionsbody + "</ul>");
+            $('#miningactionspanel').html(miningactionsbody + '</ul>');
             $('#miningaccountspanel').html(miningaccountsbody);
-            $('#miningbutton').html(miningbutton);
-            $('#miningpanelbody4').html(miningpanelbody4);
+            $('#miningbuttons').html(miningbuttons);
+            $('#miningpanelbody3').html(miningpanelbody3);
             $('#generateresult').html(generateresult);
+            if (data['miningstate'] === false) $("#miningbutton2").prop("disabled", true);
+            else $("#miningbutton1").prop("disabled", true);
         }
     });
 };

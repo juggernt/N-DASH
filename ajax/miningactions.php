@@ -124,17 +124,18 @@ if(isset($_GET['action'])) {
 		echo json_encode($returnarray);
 	}
 	
-	// Handel mining request
+	// Handle mining request
 	elseif($_GET['action'] == "handlemining") {
         $generate = $_POST['generate'];
         $UUID =  $_POST['uuid'];
         $numproc = $_POST['numproc'];
+        $arenaproc = $_POST['arenaproc'];
         $memsize = $_POST['memsize'];
         $rewardaddress = $_POST['rewardaddress'];
         $setrewardaddressresult = "true";
 	
         if ($generate == "true") {
-            $generateresult = $gulden->setgenerate(true, (int)$numproc, (int)$numproc, (int)$memsize.'M', $UUID);
+            $generateresult = $gulden->setgenerate(true, (int)$numproc, (int)$arenaproc, (int)$memsize.'M', $UUID);
         }
         else $generateresult = $gulden->setgenerate(false);
         

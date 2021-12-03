@@ -170,8 +170,8 @@
                     <div id="slider" style="margin: auto; margin-top: 10px; width: 80%"><div id="numproc" class="ui-slider-handle"></div></div>
                     <div id="miningpanelbody2" style="margin-top: 20px; text-align: center"></div>
                     <div id="slider2" style="margin: auto; margin-top: 10px; width: 80%"><div id="memsize" class="ui-slider-handle"></div></div>
-                    <div id="miningbutton" style="margin:auto; margin-top: 20px; width: 80%"></div>
-                    <div id="miningpanelbody4" style="margin: 30px 15px"></div>
+                    <div id="miningbuttons" style="margin:auto; margin-top: 20px; width: 80%"></div>
+                    <div id="miningpanelbody3" style="margin: 30px 15px"></div>
                     <div id="generateresult" style="margin: auto; width: 80%"></div>
                 </div>
             </div>
