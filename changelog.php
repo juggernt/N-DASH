@@ -22,7 +22,19 @@
     Changelog
     <p class="lead">N-DASH changelog</p>
   </h1>
-  
+
+  <div class="panel panel-default">
+    <div class="panel-heading"><b>v2.2</b></div>
+    <div class="panel-body">
+		<ul>
+            <li>Made arena setup configurable</li>
+            <li>Cron notifications every 60 min.</li>
+            <li>Florin trading pair changed from NLG/XFL to XFL/USDC on Stex</li>
+            <li>CoinGecko exchange removed from Settings/Wallet</li>
+        </ul>
+    </div>
+  </div>
+
   <div class="panel panel-default">
     <div class="panel-heading"><b>v2.1</b></div>
     <div class="panel-body">
