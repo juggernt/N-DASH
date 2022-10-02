@@ -79,7 +79,7 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 		$returnarray['accounttransactionsdetails'] = "<tr><td colspan='4'>Novo-daemon is not running</td></tr>";
 		$returnarray['disablewallet'] = "1";
 	}
-//	$returnarray['errors'] = $gerrors;
+	$returnarray['errors'] = '';
 	$returnarray['server']['cpu'] = $guldenCPU;
 	$returnarray['server']['mem'] = $guldenMEM;
 } else {

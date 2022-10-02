@@ -26,9 +26,14 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 	$returnarray['server']['temperature'] = $linuxTemp;
 	
 	$guldengetinfo = $gulden->getinfo();
-	$guldenprimaryresponsecode = $gulden->response['error']['code'];
-	$guldenprimaryresponsemessage = $gulden->response['error']['message'];
-	
+	$resp = $gulden->response;
+	$guldenprimaryresponsecode = 0;
+	$guldenprimaryresponsemessage = '';
+	if ($resp != null && isset($resp['error'])) {
+		$guldenprimaryresponsecode = $gulden->response['error']['code'];
+		$guldenprimaryresponsemessage = $gulden->response['error']['message'];
+	}
+
 	if($guldenprimaryresponsecode == "-28") {
 		$returnarray['gulden']['version'] = '';
 		$returnarray['gulden']['sync'] = '';
@@ -117,7 +122,6 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 		
 		//Block info
 		$tablerows = "";
-		$rawlist = array();
 		for ($i=$gallblocks; $i > $gallblocks-10 ; $i--) {
 			$blockinfo = $gulden->getblock($gulden->getblockhash($i));
 			if ($blockinfo == "") break;
@@ -130,9 +134,12 @@ if($guldenCPU > 0 && $guldenMEM > 0) {
 			foreach ($txlist as $txid) {
                 $rawtx = $gulden->getrawtransaction($txid);
                 $txobj = $gulden->decoderawtransaction($rawtx);
-                $errorcode = $gulden->response['error']['code'];
-                if ($errorcode == "-22") {
-                    break;
+				$resp = $gulden->response;
+				if ($resp != null && isset($resp['error'])) {
+					$errorcode = $gulden->response['error']['code'];
+					if ($errorcode == "-22") {
+						break;
+					}
                 }
                 $rawresponse = $gulden->raw_response;
                 $realtx = json_decode($rawresponse, true);

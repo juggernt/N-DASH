@@ -99,8 +99,8 @@
 	//Random check sleep
 	$randompbchecktime = rand(1,60);
 	
-	//Every two minutes
-	$pushbulletcronentry = "*/5 * * * * sleep ".$randompbchecktime."; php ".__DIR__."/lib/push/cronnotifications.php >/dev/null 2>&1";
+	//Every hour
+	$pushbulletcronentry = "*/60 * * * * php ".__DIR__."/lib/push/cronnotifications.php >/dev/null 2>&1";
 	$currentcron = explode(PHP_EOL, shell_exec('crontab -l'));
 	
 	if($pushbulletcron=="0" && $CONFIG['pushbullet']!="") {

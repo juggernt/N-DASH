@@ -266,7 +266,7 @@ $(document).ready(function() {
                 exchangerate = data['exchange'] + ': ';
                 if (data['currentprice'] == 0) exchangerate += 'Not available!';
                 else exchangerate += data['pricesymbol'] + " " + data['currentprice'].toFixed(data['rounding']);
-		  	  	$('#walletinfopanel').html("<div class='alert alert-success'>Novo exchange rate from " + exchangerate + "</div>" +
+		  	  	$('#walletinfopanel').html("<div class='alert alert-success'>Florin exchange rate from " + exchangerate + "</div>" +
                     "<b>Balance:</b> N "+numberWithCommas(data['balance'])+" / "+data['otherbalancesymbol']+" "+numberWithCommas(data['otherbalance'])+"<br>"+
 										   "<b>Address:</b> "+data['address']+"<br><br>"+
 				  						   "<div id='novoqr'></div>");

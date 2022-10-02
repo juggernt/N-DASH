@@ -399,8 +399,7 @@ function LoginCheck($guldenConf, $out=FALSE, $disabled="0")
 	} elseif($disabled=="1") {
 		$returnvalue = TRUE;
 		$_SESSION['N-DASH-loggedin'] = TRUE;
-// @1.0	} elseif($_SESSION['G-DASH-loggedin']==TRUE) { // @1.0
-	} elseif(isset($_SESSION['N-DASH-loggedin']) && $_SESSION['N-DASH-loggedin'] == TRUE) { // @1.0
+	} elseif(isset($_SESSION['N-DASH-loggedin']) && $_SESSION['N-DASH-loggedin'] == TRUE) {
 		$returnvalue = TRUE;
 	}
 	return $returnvalue;
@@ -478,6 +477,7 @@ function getLiveTransactionDetails($accounttransactions, $numoftransactionstosho
 	foreach ($uniquetxids as $transactiontxid) {
 		//Get the transaction details from the GuldenD for this transaction
 		$txrawdetails = $gulden->gettransaction($transactiontxid);
+        $currenttx['txconfirmations'] = $txrawdetails['confirmations'];
    		$transactiondate = date('d/m/Y H:i', $txrawdetails['time']);
         $txdetails = $txrawdetails['details'];
         for ($x = 0; $x <count($txdetails); $x++) {

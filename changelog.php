@@ -29,8 +29,8 @@
 		<ul>
             <li>Made arena setup configurable</li>
             <li>Cron notifications every 60 min.</li>
-            <li>Florin trading pair changed from NLG/XFL to XFL/USDC on Stex</li>
-            <li>CoinGecko exchange removed from Settings/Wallet</li>
+            <li>Stex: Florin trading pair NGL/XFL added</li>
+            <li>Array checks added to avoid php errors</li>
         </ul>
     </div>
   </div>
