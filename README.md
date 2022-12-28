@@ -11,7 +11,7 @@ This dashboard is created with the idea to keep everything as simple as
 possible, so even people who are not very good with computers or don't 
 understand how to set up a holding account can use this functionality 
 of Novo/Florin. Of course, new ideas and comments are always welcome. You can 
-contact me via email: dashboardnovo@google.com
+contact me via email: dashboardnovo@gmail.com
 
 ATTENTION!  
 N-DASH releases 1.x are for Novo (Florin version up to 1.0.11).  
